@@ -1,0 +1,8 @@
+.git
+.vscode
+bin
+tmp
+*.exe
+*.test
+verify.go
+Dockerfile

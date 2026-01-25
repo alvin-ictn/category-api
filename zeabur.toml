@@ -1,0 +1,3 @@
+[service]
+name = "category-api"
+dockerfile = "Dockerfile"
