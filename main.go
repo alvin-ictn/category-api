@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/spf13/viper"
 )
@@ -56,6 +57,23 @@ func main() {
 	mux := http.NewServeMux()
 	categoryHandler.RegisterRoutes(mux)
 	productHandler.RegisterRoutes(mux)
+
+	// Start Background Cleanup Routine (Every 24 hours, delete records older than 30 days)
+	go func() {
+		ticker := time.NewTicker(24 * time.Hour)
+		defer ticker.Stop()
+		for range ticker.C {
+			log.Println("Running cleanup routine...")
+			duration := 30 * 24 * time.Hour
+			if err := categoryRepo.CleanUpOldDeleted(duration); err != nil {
+				log.Println("Error cleaning up categories:", err)
+			}
+			if err := productRepo.CleanUpOldDeleted(duration); err != nil {
+				log.Println("Error cleaning up products:", err)
+			}
+			log.Println("Cleanup routine finished.")
+		}
+	}()
 
 	addr := ":" + config.Port
 	fmt.Println("Server is running on http://localhost" + addr)

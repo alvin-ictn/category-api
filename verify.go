@@ -148,5 +148,32 @@ func main() {
 	}
 	fmt.Println("GET /products/{id} - PASS (Category Name:", fetchedProd["category_name"], ")")
 
+	// 9. SOFT DELETE Product
+	req, _ = http.NewRequest(http.MethodDelete, fmt.Sprintf("%s/products/%d", baseURL, prodID), nil)
+	resp, err = http.DefaultClient.Do(req)
+	if err != nil {
+		fmt.Println("Error deleting product:", err)
+		os.Exit(1)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 204 {
+		fmt.Println("Expected 204 No Content for Product Delete, got", resp.Status)
+		os.Exit(1)
+	}
+	fmt.Println("DELETE /products/{id} - PASS (Soft Delete)")
+
+	// 10. GET Deleted Product (Should be 404)
+	resp, err = http.Get(fmt.Sprintf("%s/products/%d", baseURL, prodID))
+	if err != nil {
+		fmt.Println("Error getting deleted product:", err)
+		os.Exit(1)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 404 {
+		fmt.Println("Expected 404 Not Found for deleted product, got", resp.Status)
+		os.Exit(1)
+	}
+	fmt.Println("GET /products/{id} (404) - PASS")
+
 	fmt.Println("ALL TESTS PASSED")
 }
