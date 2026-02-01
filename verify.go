@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	baseURL := "http://localhost:8080"
+	baseURL := "http://localhost:8080/api/v1"
 
 	// Wait for server to start
 	time.Sleep(2 * time.Second)

@@ -54,9 +54,14 @@ func main() {
 	productSvc := service.NewProductService(productRepo)
 	productHandler := handler.NewProductHandler(productSvc)
 
+	// API Versioning Setup
+	v1Mux := http.NewServeMux()
+	categoryHandler.RegisterRoutes(v1Mux)
+	productHandler.RegisterRoutes(v1Mux)
+
+	// Main Router
 	mux := http.NewServeMux()
-	categoryHandler.RegisterRoutes(mux)
-	productHandler.RegisterRoutes(mux)
+	mux.Handle("/api/v1/", http.StripPrefix("/api/v1", v1Mux))
 
 	// Start Background Cleanup Routine (Every 24 hours, delete records older than 30 days)
 	go func() {
