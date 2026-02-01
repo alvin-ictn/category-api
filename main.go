@@ -43,13 +43,19 @@ func main() {
 	}
 	defer db.Close()
 
-	// Dependency Injection
-	repo := repository.NewPostgresCategoryRepository(db) // Switched to Postgres
-	svc := service.NewCategoryService(repo)
-	h := handler.NewCategoryHandler(svc)
+	// Category Dependency Injection
+	categoryRepo := repository.NewPostgresCategoryRepository(db)
+	categorySvc := service.NewCategoryService(categoryRepo)
+	categoryHandler := handler.NewCategoryHandler(categorySvc)
+
+	// Product Dependency Injection
+	productRepo := repository.NewProductRepository(db)
+	productSvc := service.NewProductService(productRepo)
+	productHandler := handler.NewProductHandler(productSvc)
 
 	mux := http.NewServeMux()
-	h.RegisterRoutes(mux)
+	categoryHandler.RegisterRoutes(mux)
+	productHandler.RegisterRoutes(mux)
 
 	addr := ":" + config.Port
 	fmt.Println("Server is running on http://localhost" + addr)

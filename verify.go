@@ -100,5 +100,53 @@ func main() {
 	}
 	fmt.Println("GET /categories/4 (404) - PASS")
 
+	// ... (Category tests above) ...
+	fmt.Println("GET /categories/4 (404) - PASS")
+
+	// ================= PRODUCT TESTS =================
+
+	// 7. CREATE Product linked to Category 1
+	newProd := map[string]interface{}{
+		"name":        "Lego Set",
+		"price":       500000,
+		"stock":       10,
+		"category_id": 1,
+	}
+	jsonData, _ = json.Marshal(newProd)
+	resp, err = http.Post(baseURL+"/products", "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		fmt.Println("Error creating product:", err)
+		os.Exit(1)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 201 {
+		fmt.Println("Expected 201 Created for Product, got", resp.Status)
+		os.Exit(1)
+	}
+	var createdProd map[string]interface{}
+	json.NewDecoder(resp.Body).Decode(&createdProd)
+	prodID := int(createdProd["id"].(float64))
+	fmt.Println("POST /products - PASS (ID:", prodID, ")")
+
+	// 8. GET Product By ID (Expect Category Name to be present)
+	resp, err = http.Get(fmt.Sprintf("%s/products/%d", baseURL, prodID))
+	if err != nil {
+		fmt.Println("Error getting product:", err)
+		os.Exit(1)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		fmt.Println("Expected 200 OK for Product, got", resp.Status)
+		os.Exit(1)
+	}
+	var fetchedProd map[string]interface{}
+	json.NewDecoder(resp.Body).Decode(&fetchedProd)
+
+	if fetchedProd["category_name"] == "" || fetchedProd["category_name"] == nil {
+		fmt.Println("FAIL: category_name is missing in product response (JOIN failed?)")
+		os.Exit(1)
+	}
+	fmt.Println("GET /products/{id} - PASS (Category Name:", fetchedProd["category_name"], ")")
+
 	fmt.Println("ALL TESTS PASSED")
 }
