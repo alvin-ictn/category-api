@@ -60,11 +60,17 @@ func main() {
 	}
 
 	// Setup Database
+	// Setup Database
 	db, err := database.InitDB(config.DBConn)
 	if err != nil {
-		log.Fatal("Failed to initialize database:", err)
+		log.Println("Warning: Failed to initialize database connection:", err)
+		// We continue so the health check endpoint can report the error
+	} else {
+		defer db.Close()
 	}
-	defer db.Close()
+
+	// Health Check
+	healthHandler := handler.NewHealthHandler(db)
 
 	// Category Dependency Injection
 	categoryRepo := repository.NewPostgresCategoryRepository(db)
@@ -78,6 +84,7 @@ func main() {
 
 	// API Versioning Setup
 	v1Mux := http.NewServeMux()
+	v1Mux.HandleFunc("/health", healthHandler.Check)
 	categoryHandler.RegisterRoutes(v1Mux)
 	productHandler.RegisterRoutes(v1Mux)
 

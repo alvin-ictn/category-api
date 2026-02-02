@@ -17,10 +17,11 @@ func InitDB(connectionString string) (*sql.DB, error) {
 	// Test connection
 	err = db.Ping()
 	if err != nil {
-		return nil, err
+		log.Println("Database connection failed (will retry):", err)
+		return db, err // Return db object anyway so we can keep trying
 	}
 
-	// Set connection pool settings (optional tapi recommended)
+	// Set connection pool settings (optional but recommended)
 	db.SetMaxOpenConns(25)
 	db.SetMaxIdleConns(5)
 

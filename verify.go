@@ -175,5 +175,18 @@ func main() {
 	}
 	fmt.Println("GET /products/{id} (404) - PASS")
 
+	// 11. GET Health Check
+	resp, err = http.Get(baseURL + "/health")
+	if err != nil {
+		fmt.Println("Error getting health check:", err)
+		os.Exit(1)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		fmt.Println("Expected 200 OK for health check, got", resp.Status)
+		os.Exit(1)
+	}
+	fmt.Println("GET /health - PASS")
+
 	fmt.Println("ALL TESTS PASSED")
 }

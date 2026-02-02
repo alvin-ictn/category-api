@@ -34,6 +34,13 @@ definitions:
       updated_at:
         type: string
     type: object
+  handler.HealthResponse:
+    properties:
+      error:
+        type: string
+      status:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact:
@@ -111,6 +118,25 @@ paths:
       summary: Get a category by ID
       tags:
       - categories
+  /health:
+    get:
+      consumes:
+      - application/json
+      description: Check database connection status
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.HealthResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/handler.HealthResponse'
+      summary: Health Check
+      tags:
+      - health
   /products:
     get:
       consumes:
