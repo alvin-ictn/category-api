@@ -52,6 +52,15 @@ func (h *ProductHandler) handleProductByID(w http.ResponseWriter, r *http.Reques
 	}
 }
 
+// GetAllProducts godoc
+//
+//	@Summary		Get all products
+//	@Description	Get all products with category info
+//	@Tags			products
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{array}	domain.Product
+//	@Router			/products [get]
 func (h *ProductHandler) getAll(w http.ResponseWriter, r *http.Request) {
 	products, err := h.service.GetAll()
 	if err != nil {
@@ -62,6 +71,17 @@ func (h *ProductHandler) getAll(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(products)
 }
 
+// GetProductByID godoc
+//
+//	@Summary		Get a product by ID
+//	@Description	Get a product by ID
+//	@Tags			products
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int	true	"Product ID"
+//	@Success		200	{object}	domain.Product
+//	@Failure		404	{string}	string	"Product not found"
+//	@Router			/products/{id} [get]
 func (h *ProductHandler) getByID(w http.ResponseWriter, r *http.Request, id int) {
 	product, err := h.service.GetByID(id)
 	if err != nil {
@@ -72,6 +92,16 @@ func (h *ProductHandler) getByID(w http.ResponseWriter, r *http.Request, id int)
 	json.NewEncoder(w).Encode(product)
 }
 
+// CreateProduct godoc
+//
+//	@Summary		Create a new product
+//	@Description	Create a new product
+//	@Tags			products
+//	@Accept			json
+//	@Produce		json
+//	@Param			product	body		domain.Product	true	"Product Data"
+//	@Success		201		{object}	domain.Product
+//	@Router			/products [post]
 func (h *ProductHandler) create(w http.ResponseWriter, r *http.Request) {
 	var product domain.Product
 	if err := json.NewDecoder(r.Body).Decode(&product); err != nil {

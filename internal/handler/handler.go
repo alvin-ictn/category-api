@@ -53,6 +53,15 @@ func (h *CategoryHandler) categoryHandler(w http.ResponseWriter, r *http.Request
 	}
 }
 
+// GetCategories godoc
+//
+//	@Summary		Show all categories
+//	@Description	Get all categories
+//	@Tags			categories
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{array}	domain.Category
+//	@Router			/categories [get]
 func (h *CategoryHandler) getCategories(w http.ResponseWriter, r *http.Request) {
 	categories, err := h.service.GetAllCategories()
 	if err != nil {
@@ -63,6 +72,16 @@ func (h *CategoryHandler) getCategories(w http.ResponseWriter, r *http.Request) 
 	json.NewEncoder(w).Encode(categories)
 }
 
+// CreateCategory godoc
+//
+//	@Summary		Create a new category
+//	@Description	Create a new category
+//	@Tags			categories
+//	@Accept			json
+//	@Produce		json
+//	@Param			category	body		domain.Category	true	"Category Data"
+//	@Success		201			{object}	domain.Category
+//	@Router			/categories [post]
 func (h *CategoryHandler) createCategory(w http.ResponseWriter, r *http.Request) {
 	var newCategory domain.Category
 	err := json.NewDecoder(r.Body).Decode(&newCategory)
@@ -82,6 +101,17 @@ func (h *CategoryHandler) createCategory(w http.ResponseWriter, r *http.Request)
 	json.NewEncoder(w).Encode(createdCategory)
 }
 
+// GetCategoryByID godoc
+//
+//	@Summary		Get a category by ID
+//	@Description	Get a category by ID
+//	@Tags			categories
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int	true	"Category ID"
+//	@Success		200	{object}	domain.Category
+//	@Failure		404	{string}	string	"Category not found"
+//	@Router			/categories/{id} [get]
 func (h *CategoryHandler) getCategoryByID(w http.ResponseWriter, r *http.Request, id int) {
 	category, err := h.service.GetCategoryByID(id)
 	if err != nil {

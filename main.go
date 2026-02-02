@@ -12,13 +12,35 @@ import (
 	"strings"
 	"time"
 
+	_ "cateogry-api/docs" // Import generated docs
+
 	"github.com/spf13/viper"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 type Config struct {
 	Port   string `mapstructure:"PORT"`
 	DBConn string `mapstructure:"DB_CONN"`
 }
+
+//	@title			Category & Product API
+//	@version		1.0
+//	@description	This is a sample server for managing categories and products.
+//	@termsOfService	http://swagger.io/terms/
+
+//	@contact.name	API Support
+//	@contact.url	http://www.swagger.io/support
+//	@contact.email	support@swagger.io
+
+//	@license.name	Apache 2.0
+//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
+
+//	@license.name	Apache 2.0
+//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
+
+//	@host		localhost:8080
+//	@BasePath	/api/v1
+//	@schemes	http
 
 func main() {
 	// Setup Configuration
@@ -62,6 +84,11 @@ func main() {
 	// Main Router
 	mux := http.NewServeMux()
 	mux.Handle("/api/v1/", http.StripPrefix("/api/v1", v1Mux))
+
+	// Swagger Setup (Root Level)
+	mux.Handle("/swagger/", httpSwagger.Handler(
+		httpSwagger.URL("http://localhost:8080/swagger/doc.json"), // The url pointing to API definition
+	))
 
 	// Start Background Cleanup Routine (Every 24 hours, delete records older than 30 days)
 	go func() {
