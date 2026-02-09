@@ -82,11 +82,17 @@ func main() {
 	productSvc := service.NewProductService(productRepo)
 	productHandler := handler.NewProductHandler(productSvc)
 
+	// Transaction Dependency Injection
+	transactionRepo := repository.NewTransactionRepository(db)
+	transactionSvc := service.NewTransactionService(transactionRepo)
+	transactionHandler := handler.NewTransactionHandler(transactionSvc)
+
 	// API Versioning Setup
 	v1Mux := http.NewServeMux()
 	v1Mux.HandleFunc("/health", healthHandler.Check)
 	categoryHandler.RegisterRoutes(v1Mux)
 	productHandler.RegisterRoutes(v1Mux)
+	transactionHandler.RegisterRoutes(v1Mux)
 
 	// Main Router
 	mux := http.NewServeMux()

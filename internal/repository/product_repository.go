@@ -15,7 +15,7 @@ func NewProductRepository(db *sql.DB) *ProductRepository {
 	return &ProductRepository{db: db}
 }
 
-func (r *ProductRepository) GetAll() ([]domain.Product, error) {
+func (r *ProductRepository) GetAll(name string) ([]domain.Product, error) {
 	query := `
 		SELECT p.id, p.name, p.description, p.price, p.stock, p.category_id, 
 		       p.created_at, p.updated_at, c.name as category_name
@@ -23,7 +23,14 @@ func (r *ProductRepository) GetAll() ([]domain.Product, error) {
 		JOIN categories c ON p.category_id = c.id
 		WHERE p.deleted_at IS NULL
 	`
-	rows, err := r.db.Query(query)
+
+	args := []interface{}{}
+	if name != "" {
+		query += " AND p.name ILIKE $1"
+		args = append(args, "%"+name+"%")
+	}
+
+	rows, err := r.db.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}

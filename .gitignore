@@ -4,3 +4,7 @@
 bin/
 tmp/
 vendor/
+
+# Migration and Verification Scripts
+migrate.go
+verify_session3_test.go
